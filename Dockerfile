@@ -1,7 +1,7 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY . .
-RUN chmod +x mvnw && ./mvnw clean package -DskipTests
+RUN rm -f .mvn/jvm.config && mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
