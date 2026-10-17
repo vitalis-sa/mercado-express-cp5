@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${produto.id == null ? 'Novo Produto' : 'Editar Produto'} + ' - Mercado Express'">
+        Formulário
+    </title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h2 th:text="${produto.id == null ? 'Cadastrar Produto' : 'Editar Produto'}">Produto</h2>
+
+    <div class="form-card">
+        <form th:action="${produto.id == null ? '/produtos/salvar' : '/produtos/editar/' + produto.id}"
+              th:object="${produto}" method="post">
+
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" th:field="*{nome}" placeholder="Nome do produto" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo">Tipo</label>
+                <select id="tipo" th:field="*{tipo}">
+                    <option value="">Selecione...</option>
+                    <option value="Alimento">Alimento</option>
+                    <option value="Bebida">Bebida</option>
+                    <option value="Limpeza">Limpeza</option>
+                    <option value="Higiene">Higiene</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="setor">Setor</label>
+                <input type="text" id="setor" th:field="*{setor}" placeholder="Ex: Hortifruti" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="tamanho">Tamanho</label>
+                <select id="tamanho" th:field="*{tamanho}">
+                    <option value="">Selecione...</option>
+                    <option value="Pequeno">Pequeno</option>
+                    <option value="Médio">Médio</option>
+                    <option value="Grande">Grande</option>
+                    <option value="Único">Único</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="preco">Preço (R$)</label>
+                <input type="number" id="preco" th:field="*{preco}" step="0.01" min="0.01"
+                       placeholder="0.00" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="custo">Custo (R$)</label>
+                <input type="number" id="custo" th:field="*{custo}" step="0.01" min="0"
+                       placeholder="0.00" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="estoque">Estoque</label>
+                <input type="number" id="estoque" th:field="*{estoque}" step="1" min="0"
+                       placeholder="0" required/>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-verde">Salvar</button>
+                <a th:href="@{/produtos}" class="btn btn-cinza">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<footer>
+    Mercado Express &mdash; FIAP TDS &mdash; CP5
+</footer>
+
+</body>
+</html>

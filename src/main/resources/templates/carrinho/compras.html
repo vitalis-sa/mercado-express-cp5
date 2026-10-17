@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Meus pedidos - Mercado Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <meta http-equiv="refresh" content="10"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h2>Meus pedidos</h2>
+
+    <div th:if="${mensagem}" class="alerta" th:text="${mensagem}"></div>
+
+    <table>
+        <thead>
+            <tr><th>Pedido</th><th>Data</th><th>Itens</th><th>Valor</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(compras)}">
+                <td colspan="5" style="text-align:center; padding:20px; color:#888;">Nenhum pedido ainda.</td>
+            </tr>
+            <tr th:each="c : ${compras}">
+                <td th:text="${c.numeroPedido}"></td>
+                <td th:text="${#temporals.format(c.dataCompra, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${c.descricao}"></td>
+                <td th:text="'R$ ' + ${#numbers.formatDecimal(c.valorTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${c.status}" th:text="${c.status}"></span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>Mercado Express &mdash; FIAP TDS &mdash; CP5</footer>
+
+</body>
+</html>

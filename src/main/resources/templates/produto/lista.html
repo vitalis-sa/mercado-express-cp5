@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Produtos - Mercado Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h2>Produtos</h2>
+
+    <div th:if="${mensagem}" class="alerta" th:text="${mensagem}"></div>
+    <div th:if="${erro}" class="login-erro" th:text="${erro}"></div>
+
+    <form th:action="@{/produtos}" method="get" style="display:flex; gap:10px; margin-bottom:20px;">
+        <input type="text" name="busca" th:value="${busca}" placeholder="Consultar produto por nome ou setor..."
+               style="flex:1; padding:9px 12px; border:1px solid #ccc; border-radius:4px; font-size:0.95rem;"/>
+        <button type="submit" class="btn btn-azul">Buscar</button>
+        <a th:if="${busca != null and !busca.isEmpty()}" th:href="@{/produtos}" class="btn btn-cinza">Limpar</a>
+    </form>
+
+    <div th:if="${#lists.isEmpty(produtos)}" style="text-align:center; padding:30px; color:#888; background:#fff; border-radius:8px;">
+        Nenhum produto encontrado.
+    </div>
+
+    <div class="produtos-grid" th:if="${!#lists.isEmpty(produtos)}">
+        <div class="produto-card" th:each="p : ${produtos}">
+            <div>
+                <div class="produto-card-header">
+                    <span class="produto-tag" th:text="${p.setor}">Setor</span>
+                    <span th:text="${p.tipo}">Tipo</span>
+                </div>
+                <h3 th:text="${p.nome}">Nome do Produto</h3>
+                <p class="produto-meta">
+                    Tamanho: <strong th:text="${p.tamanho}">Médio</strong>
+                    <span sec:authorize="hasRole('ADMIN')"> &bull; Estoque: <strong th:text="${p.estoque}">0</strong></span>
+                </p>
+                <div class="produto-preco" th:text="'R$ ' + ${#numbers.formatDecimal(p.preco, 1, 'POINT', 2, 'COMMA')}">
+                    R$ 0,00
+                </div>
+            </div>
+
+            <div class="produto-acoes">
+                <a th:href="@{/produtos/{id}(id=${p.id})}" class="btn btn-azul">Ver</a>
+                <form th:action="@{/carrinho/adicionar/{id}(id=${p.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-verde" th:disabled="${p.estoque == null or p.estoque <= 0}">🛒 Comprar</button>
+                </form>
+                <a th:href="@{/produtos/editar/{id}(id=${p.id})}"
+                   sec:authorize="hasRole('ADMIN')" class="btn btn-cinza">Editar</a>
+                <a th:href="@{/produtos/deletar/{id}(id=${p.id})}"
+                   sec:authorize="hasRole('ADMIN')"
+                   class="btn btn-vermelho"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Mercado Express &mdash; FIAP TDS &mdash; CP5
+</footer>
+
+</body>
+</html>

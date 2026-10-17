@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Mercado Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <a th:href="@{/}" class="logo">🛒 Mercado Express</a>
+    <div class="nav-links">
+        <a th:href="@{/produtos}" sec:authorize="isAuthenticated()">Ir para o mercado</a>
+        <a th:href="@{/login}" sec:authorize="!isAuthenticated()">Entrar</a>
+        <a th:href="@{/cadastro}" sec:authorize="!isAuthenticated()">Criar conta</a>
+    </div>
+</nav>
+
+<div class="container hero">
+    <h1>🛒 Mercado Express</h1>
+    <p>Frutas, limpeza, bebidas e muito mais — compre online e pague com o Banco Tranquilo.</p>
+    <div class="form-actions" style="justify-content:center;">
+        <a th:href="@{/login}" class="btn btn-verde" sec:authorize="!isAuthenticated()">Entrar</a>
+        <a th:href="@{/cadastro}" class="btn btn-azul" sec:authorize="!isAuthenticated()">Criar conta</a>
+        <a th:href="@{/produtos}" class="btn btn-verde" sec:authorize="isAuthenticated()">Ver produtos</a>
+    </div>
+</div>
+
+<footer>
+    Mercado Express &mdash; FIAP TDS &mdash; CP5
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Login - Mercado Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-box">
+        <h2>🛒 Mercado Express</h2>
+
+        <div th:if="${param.erro}" class="login-erro">
+            E-mail ou senha inválidos.
+        </div>
+
+        <div th:if="${param.logout}" class="alerta">
+            Você saiu com sucesso.
+        </div>
+
+        <div th:if="${param.cadastrado}" class="alerta">
+            Conta criada! Faça login para continuar.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">E-mail</label>
+                <input type="email" id="username" name="username" autofocus required/>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required/>
+            </div>
+            <button type="submit" class="btn btn-verde" style="width:100%">Entrar</button>
+        </form>
+
+        <p class="login-link">Não tem conta? <a th:href="@{/cadastro}">Cadastre-se</a></p>
+        <p class="login-link"><a th:href="@{/}">← Voltar ao início</a></p>
+    </div>
+</div>
+
+</body>
+</html>

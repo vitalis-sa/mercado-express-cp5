@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${produto.nome} + ' - Mercado Express'">Produto</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h2>Detalhes do Produto</h2>
+
+    <div class="detalhe-card">
+        <p>Nome: <span th:text="${produto.nome}"></span></p>
+        <p>Tipo: <span th:text="${produto.tipo}"></span></p>
+        <p>Setor: <span th:text="${produto.setor}"></span></p>
+        <p>Tamanho: <span th:text="${produto.tamanho}"></span></p>
+        <p>Preço: <span th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 'POINT', 2, 'COMMA')}"></span></p>
+        <p sec:authorize="hasRole('ADMIN')">Custo: <span th:text="'R$ ' + ${#numbers.formatDecimal(produto.custo, 1, 'POINT', 2, 'COMMA')}"></span></p>
+        <p sec:authorize="hasRole('ADMIN')">Estoque: <span th:text="${produto.estoque}"></span></p>
+
+        <div class="form-actions" style="margin-top:20px;">
+            <a th:href="@{/produtos/editar/{id}(id=${produto.id})}"
+               sec:authorize="hasRole('ADMIN')" class="btn btn-verde">Editar</a>
+            <a th:href="@{/produtos/deletar/{id}(id=${produto.id})}"
+               sec:authorize="hasRole('ADMIN')"
+               class="btn btn-vermelho"
+               onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+            <a th:href="@{/produtos}" class="btn btn-cinza">Voltar</a>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Mercado Express &mdash; FIAP TDS &mdash; CP5
+</footer>
+
+</body>
+</html>

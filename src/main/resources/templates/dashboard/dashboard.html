@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Dashboard - Mercado Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container wide">
+    <h2>Dashboard Gerencial</h2>
+
+    <div class="cards">
+        <div class="card"><span>Compras</span><strong th:text="${d.totalCompras}">0</strong></div>
+        <div class="card"><span>Aprovadas</span><strong th:text="${d.aprovadas}">0</strong></div>
+        <div class="card"><span>Recusadas</span><strong th:text="${d.recusadas}">0</strong></div>
+        <div class="card"><span>Pendentes</span><strong th:text="${d.pendentes}">0</strong></div>
+        <div class="card"><span>Receita</span><strong th:text="'R$ ' + ${#numbers.formatDecimal(d.receita, 1, 'POINT', 2, 'COMMA')}">0</strong></div>
+        <div class="card"><span>Lucro</span><strong th:text="'R$ ' + ${#numbers.formatDecimal(d.lucro, 1, 'POINT', 2, 'COMMA')}">0</strong></div>
+        <div class="card"><span>E-mails (TB_EMAIL)</span><strong th:text="${d.emailsEnviados}">0</strong></div>
+    </div>
+
+    <div class="charts">
+        <div class="chart-box"><h3>Vendas por dia (R$)</h3><canvas id="cVendas"
+            th:attr="data-labels=${#strings.listJoin(d.vendasPorDia.keySet(), '|')},data-values=${#strings.listJoin(d.vendasPorDia.values(), '|')}"></canvas></div>
+        <div class="chart-box"><h3>Produtos vendidos (qtd)</h3><canvas id="cProdutos"
+            th:attr="data-labels=${#strings.listJoin(d.produtosVendidos.keySet(), '|')},data-values=${#strings.listJoin(d.produtosVendidos.values(), '|')}"></canvas></div>
+        <div class="chart-box"><h3>Estoque atual</h3><canvas id="cEstoque"
+            th:attr="data-labels=${#strings.listJoin(d.estoque.![nome], '|')},data-values=${#strings.listJoin(d.estoque.![estoque], '|')}"></canvas></div>
+    </div>
+
+    <h3>Últimas compras</h3>
+    <table>
+        <thead><tr><th>Pedido</th><th>Cliente</th><th>Itens</th><th>Valor</th><th>Status</th></tr></thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(d.ultimasCompras)}">
+                <td colspan="5" style="text-align:center; padding:20px; color:#888;">Nenhuma compra.</td>
+            </tr>
+            <tr th:each="c : ${d.ultimasCompras}">
+                <td th:text="${c.numeroPedido}"></td>
+                <td th:text="${c.clienteEmail}"></td>
+                <td th:text="${c.descricao}"></td>
+                <td th:text="'R$ ' + ${#numbers.formatDecimal(c.valorTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${c.status}" th:text="${c.status}"></span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 style="margin-top:24px;">Controle de E-mails Enviados (TB_EMAIL)</h3>
+    <table>
+        <thead><tr><th>Ref</th><th>Destinatário</th><th>Assunto</th><th>Data</th><th>Status</th></tr></thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(d.ultimosEmails)}">
+                <td colspan="5" style="text-align:center; padding:20px; color:#888;">Nenhum e-mail registrado.</td>
+            </tr>
+            <tr th:each="e : ${d.ultimosEmails}">
+                <td th:text="${e.ownerRef}"></td>
+                <td th:text="${e.emailTo}"></td>
+                <td th:text="${e.subject}"></td>
+                <td th:text="${e.sendDateEmail != null ? #temporals.format(e.sendDateEmail, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                <td><span class="badge" th:classappend="${e.statusEmail.name() == 'SENT' ? 'badge-APROVADO' : 'badge-RECUSADO'}" th:text="${e.statusEmail}"></span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>Mercado Express &mdash; FIAP TDS &mdash; CP5</footer>
+
+<script>
+    function grafico(id, tipo, cor) {
+        const el = document.getElementById(id);
+        const labels = el.dataset.labels ? el.dataset.labels.split('|') : [];
+        const values = el.dataset.values ? el.dataset.values.split('|').map(Number) : [];
+        new Chart(el, {
+            type: tipo,
+            data: { labels: labels, datasets: [{ data: values, backgroundColor: cor, borderColor: '#2e7d32' }] },
+            options: { plugins: { legend: { display: tipo === 'doughnut' } } }
+        });
+    }
+    grafico('cVendas', 'bar', '#66bb6a');
+    grafico('cProdutos', 'doughnut', ['#2e7d32','#1565c0','#ef6c00','#6a1b9a','#c62828','#00838f']);
+    grafico('cEstoque', 'bar', '#42a5f5');
+</script>
+
+</body>
+</html>

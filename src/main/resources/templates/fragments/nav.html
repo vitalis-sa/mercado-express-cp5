@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-BR">
+<body>
+
+<nav class="navbar" th:fragment="nav">
+    <a th:href="@{/produtos}" class="logo">🛒 Mercado Express</a>
+    <div class="nav-links">
+        <span sec:authentication="name"></span>
+        <a th:href="@{/produtos}">Produtos</a>
+        <a th:href="@{/carrinho}">Carrinho</a>
+        <a th:href="@{/compras}">Meus pedidos</a>
+        <a th:href="@{/produtos/novo}" sec:authorize="hasRole('ADMIN')">+ Novo Produto</a>
+        <a th:href="@{/dashboard}" sec:authorize="hasRole('ADMIN')">Dashboard</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Sair</button>
+        </form>
+    </div>
+</nav>
+
+</body>
+</html>

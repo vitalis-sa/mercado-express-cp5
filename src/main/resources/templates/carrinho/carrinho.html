@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Carrinho - Mercado Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h2>Carrinho de Compras</h2>
+
+    <div th:if="${mensagem}" class="alerta" th:text="${mensagem}"></div>
+    <div th:if="${erro}" class="login-erro" th:text="${erro}"></div>
+
+    <table>
+        <thead>
+            <tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Subtotal</th><th></th></tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(linhas)}">
+                <td colspan="5" style="text-align:center; padding:20px; color:#888;">Carrinho vazio.</td>
+            </tr>
+            <tr th:each="l : ${linhas}">
+                <td th:text="${l.produto.nome}"></td>
+                <td th:text="'R$ ' + ${#numbers.formatDecimal(l.produto.preco, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td th:text="${l.quantidade}"></td>
+                <td th:text="'R$ ' + ${#numbers.formatDecimal(l.subtotal, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td>
+                    <form th:action="@{/carrinho/remover/{id}(id=${l.produto.id})}" method="post" class="inline">
+                        <button type="submit" class="btn btn-vermelho">Remover</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 class="total" th:text="'Total: R$ ' + ${#numbers.formatDecimal(total, 1, 'POINT', 2, 'COMMA')}">Total</h3>
+
+    <div class="form-actions">
+        <a th:href="@{/produtos}" class="btn btn-cinza">Continuar comprando</a>
+        <form th:action="@{/carrinho/finalizar}" method="post" th:unless="${#lists.isEmpty(linhas)}">
+            <button type="submit" class="btn btn-verde">Finalizar compra (Banco Tranquilo)</button>
+        </form>
+    </div>
+</div>
+
+<footer>Mercado Express &mdash; FIAP TDS &mdash; CP5</footer>
+
+</body>
+</html>
