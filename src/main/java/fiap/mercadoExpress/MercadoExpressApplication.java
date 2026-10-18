@@ -9,7 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MercadoExpressApplication {
 
 	public static void main(String[] args) {
-		System.setProperty("javax.net.ssl.trustStoreType", "Windows-ROOT");
+		if (System.getProperty("os.name", "").toLowerCase().contains("win")) {
+			System.setProperty("javax.net.ssl.trustStoreType", "Windows-ROOT");
+		}
 		SpringApplication.run(MercadoExpressApplication.class, args);
 	}
 

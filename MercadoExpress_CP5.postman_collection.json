@@ -1,0 +1,143 @@
+{
+  "info": {
+    "_postman_id": "a9c8e7b6-5d4f-4e3a-9b2c-1d0e9f8a7b6c",
+    "name": "Mercado Express - CP5 (Pagamentos & Email)",
+    "description": "Coleção de testes do Checkpoint 5 (Java Advanced - FIAP): Pagamento assíncrono com RabbitMQ (Banco Tranquilo) e envio de e-mail com persistência no PostgreSQL (TB_EMAIL).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "admin@mercado.com",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "admin123",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. Solicitar Pagamento (Localhost)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroPedido\": \"PED-171\",\n  \"valor\": 550.00,\n  \"produto\": \"1x Camiseta Esportiva\",\n  \"emailCliente\": \"anaflaviacamelorc@gmail.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pagamentos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pagamentos"
+          ]
+        },
+        "description": "Envia uma solicitação de pagamento para a fila pagamento-request-queue do Banco Tranquilo (dbexpress)."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Enviar E-mail Direto - Exemplo PDF ( POST /sending-email )",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ownerRef\": \"Tranquilo\",\n  \"emailFrom\": \"anaflaviacamelorc@gmail.com\",\n  \"emailTo\": \"anaflaviacamelorc@gmail.com\",\n  \"subject\": \"Aproveita que está fácil\",\n  \"text\": \"Olá, tudo bem? To enviando este e-mail somente para ficar tranquilo mesmo!!! Atenciosamente, Prof. Marcel\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sending-email",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sending-email"
+          ]
+        },
+        "description": "Testa o envio direto de e-mail e persistência na tabela TB_EMAIL com os parâmetros exatos da página 3 do PDF."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Solicitar Pagamento (Produção Render)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroPedido\": \"PED-172\",\n  \"valor\": 89.90,\n  \"produto\": \"2x Suco de Laranja 1L\",\n  \"emailCliente\": \"anaflaviacamelorc@gmail.com\"\n}"
+        },
+        "url": {
+          "raw": "{{renderUrl}}/pagamentos",
+          "host": [
+            "{{renderUrl}}"
+          ],
+          "path": [
+            "pagamentos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Enviar E-mail Direto (Produção Render)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ownerRef\": \"Tranquilo\",\n  \"emailFrom\": \"anaflaviacamelorc@gmail.com\",\n  \"emailTo\": \"anaflaviacamelorc@gmail.com\",\n  \"subject\": \"Aproveita que está fácil\",\n  \"text\": \"Olá, tudo bem? To enviando este e-mail somente para ficar tranquilo mesmo!!! Atenciosamente, Prof. Marcel\"\n}"
+        },
+        "url": {
+          "raw": "{{renderUrl}}/sending-email",
+          "host": [
+            "{{renderUrl}}"
+          ],
+          "path": [
+            "sending-email"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "renderUrl",
+      "value": "https://mercado-express-cp5-iay0.onrender.com",
+      "type": "string"
+    }
+  ]
+}
