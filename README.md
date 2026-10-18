@@ -45,7 +45,7 @@ Aplicação web desenvolvida com Spring MVC, Thymeleaf, Spring Security, Postgre
 
 ## Configuração do Spring Initializr
 
-![Spring Initializr](./prints/spring-initializr.png)
+<img width="1147" height="830" alt="image" src="https://github.com/user-attachments/assets/a8500377-32b7-47f8-a82a-3300bf5b4496" />
 
 ---
 
@@ -187,28 +187,42 @@ A aplicação possui cadastro de novos clientes (`/cadastro`) persistido no Post
 ## Telas — Parte 1 (Autenticação e CRUD)
 
 ### Landing Page (`GET /`)
-![Landing Page](./prints/index.png)
+
+<img width="1919" height="759" alt="image" src="https://github.com/user-attachments/assets/6fcd208e-2c7d-4234-9628-9d0dc6879ad6" />
 
 ### Tela de Cadastro — Sign Up (`GET /cadastro`)
-![Cadastro](./prints/cadastro.png)
+
+<img width="1919" height="940" alt="image" src="https://github.com/user-attachments/assets/32e7bc95-5708-4239-87cf-51fb028bc87d" />
 
 ### Tela de Login Customizada (`GET /login`)
-![Login](./prints/login.png)
+
+<img width="1910" height="944" alt="image" src="https://github.com/user-attachments/assets/4863209d-8aa2-4f82-9a5f-065cf38aba4f" />
 
 ### Produtos em Cards (`GET /produtos`)
 Logado como **USER** — visualiza os cards de produtos sem exposição de ID ou estoque interno, e sem botões administrativos (`sec:authorize="hasRole('ADMIN')"`).
 
-![Produtos USER](./prints/lista-user.png)
+<img width="1919" height="745" alt="image" src="https://github.com/user-attachments/assets/0d2042d1-0ef8-4cb5-af9c-73b476cfe57f" />
+
+### Detalhes do Produto (`GET /produtos/{id}`)
+
+<img width="1919" height="401" alt="image" src="https://github.com/user-attachments/assets/6215cf55-1ce9-4aea-8230-f3521d19cc28" />
+
 
 Logado como **ADMIN** — visualiza estoque e todos os botões de gerenciamento (Editar, Excluir, Novo Produto e Dashboard).
 
-![Produtos ADMIN](./prints/lista-admin.png)
+<img width="1919" height="776" alt="image" src="https://github.com/user-attachments/assets/72499640-bd02-4318-91d8-d2dfb02fee26" />
 
-### Cadastrar e Editar Produto (`GET /produtos/novo` e `GET /produtos/editar/{id}`)
-![Formulário de Produto](./prints/form-cadastro.png)
+### Cadastrar  (`GET /produtos/novo`)
+
+<img width="1919" height="819" alt="image" src="https://github.com/user-attachments/assets/dd14b1e4-b245-46b9-a62b-3360851a1255" />
+
+### Editar Produto (`GET /produtos/editar/{id}`)
+
+<img width="1919" height="818" alt="image" src="https://github.com/user-attachments/assets/8eb6bf44-d55e-4c57-867a-eda92a53a963" />
 
 ### Detalhes do Produto (`GET /produtos/{id}`)
-![Detalhe do Produto](./prints/detalhe.png)
+
+<img width="1919" height="490" alt="image" src="https://github.com/user-attachments/assets/26981a23-21f6-4213-bbe0-9105a4c7e235" />
 
 ---
 
@@ -223,7 +237,7 @@ Logado como **ADMIN** — visualiza estoque e todos os botões de gerenciamento 
 | **3. Resposta de Erro (Worker ➔ API)** | `pagamento-response-erro-exchange` | `pagamento-response-erro-rout-key` | `pagamento-response-erro-queue` |
 | **4. Envio de E-mail (Fila Direta)** | *(Default Exchange)* | `ms.email` | `ms.email` |
 
-![RabbitMQ Queues](./prints/rabbitmq-queues.png)
+<img width="1098" height="441" alt="image" src="https://github.com/user-attachments/assets/8590d5ce-d7e3-4b45-8626-f9d0401a5790" />
 
 ---
 
@@ -256,15 +270,17 @@ Logado como **ADMIN** — visualiza estoque e todos os botões de gerenciamento 
 
 ### Carrinho de Compras e Meus Pedidos (`GET /carrinho` e `GET /compras`)
 
-![Carrinho](./prints/carrinho.png)
+<img width="1919" height="412" alt="image" src="https://github.com/user-attachments/assets/94ff19b1-8f4c-44f5-a559-cd879d124e99" />
 
-![Meus Pedidos](./prints/compras.png)
+<img width="1919" height="326" alt="image" src="https://github.com/user-attachments/assets/3cfa7acf-8881-4748-ab2d-0f0f92e206d9" />
+
+<img width="1915" height="460" alt="image" src="https://github.com/user-attachments/assets/b25da573-a1d0-4387-9bdb-6292d3ad4013" />
 
 ---
 
 ### E-mail de Confirmação Recebido e Persistência em `TB_EMAIL`
 
-![E-mail Confirmado](./prints/email-confirmacao.png)
+<img width="1132" height="259" alt="image" src="https://github.com/user-attachments/assets/cc67c289-4798-4dd5-b066-f0b39edd584f" />
 
 ---
 
@@ -272,7 +288,7 @@ Logado como **ADMIN** — visualiza estoque e todos os botões de gerenciamento 
 
 Exibe o total de compras, compras aprovadas/recusadas/pendentes, receita total, lucro total, controle de e-mails enviados (`TB_EMAIL`) e gráficos interativos (Chart.js) de vendas por dia, produtos vendidos e estoque atual.
 
-![Dashboard Gerencial](./prints/dashboard.png)
+<img width="1906" height="920" alt="image" src="https://github.com/user-attachments/assets/f4de489f-5a53-4cc2-98fe-1262d4bd4167" />
 
 ---
 
