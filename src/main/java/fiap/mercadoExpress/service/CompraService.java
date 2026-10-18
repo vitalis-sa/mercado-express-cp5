@@ -29,9 +29,10 @@ public class CompraService {
 
     @Transactional
     public Compra criarPedido(Map<Long, Integer> itensCarrinho, String usuarioLogado) {
-        if (itensCarrinho.isEmpty()) {
-            throw new IllegalStateException("Carrinho vazio.");
-        }
+        Map<Long, Integer> itensValidos = Optional.ofNullable(itensCarrinho)
+                .filter(map -> !map.isEmpty())
+                .orElseThrow(() -> new IllegalStateException("Carrinho vazio."));
+
         String numeroPedido = "PED-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         Optional<Usuario> usuarioOpt = buscarUsuario(usuarioLogado);
         Compra compra = pagamentoMapper.toNovaCompra(
@@ -41,13 +42,10 @@ public class CompraService {
         );
 
         BigDecimal total = BigDecimal.ZERO;
-        for (Map.Entry<Long, Integer> e : itensCarrinho.entrySet()) {
+        for (Map.Entry<Long, Integer> e : itensValidos.entrySet()) {
             Produto p = produtoRepository.findById(e.getKey())
-                    .orElseThrow(() -> new IllegalStateException("Produto não encontrado: " + e.getKey()));
-            int estoque = p.getEstoque() == null ? 0 : p.getEstoque();
-            if (e.getValue() > estoque) {
-                throw new IllegalStateException("Estoque insuficiente para " + p.getNome());
-            }
+                    .filter(prod -> Optional.ofNullable(prod.getEstoque()).orElse(0) >= e.getValue())
+                    .orElseThrow(() -> new IllegalStateException("Produto indisponível ou estoque insuficiente."));
             ItemCompra item = pagamentoMapper.toItemCompra(p, e.getValue());
             compra.adicionarItem(item);
             total = total.add(item.getPrecoUnitario().multiply(BigDecimal.valueOf(e.getValue())));
@@ -57,12 +55,16 @@ public class CompraService {
     }
 
     public List<Compra> listarDoCliente(String usuarioLogado) {
-        String email = buscarUsuario(usuarioLogado).map(Usuario::getEmail).orElse(usuarioLogado);
-        return compraRepository.findByClienteEmailOrderByDataCompraDesc(email);
+        return buscarUsuario(usuarioLogado)
+                .map(Usuario::getEmail)
+                .or(() -> Optional.ofNullable(usuarioLogado))
+                .map(compraRepository::findByClienteEmailOrderByDataCompraDesc)
+                .orElseGet(List::of);
     }
 
     private Optional<Usuario> buscarUsuario(String identificador) {
-        return usuarioRepository.findByNome(identificador)
-                .or(() -> usuarioRepository.findByEmail(identificador));
+        return Optional.ofNullable(identificador)
+                .flatMap(id -> usuarioRepository.findByNome(id)
+                        .or(() -> usuarioRepository.findByEmail(id)));
     }
 }

@@ -18,13 +18,13 @@ public class ProdutoService {
     private final ProdutoMapper produtoMapper;
 
     public List<ProdutoDTO> listarDto(String busca) {
-        if (busca == null || busca.isBlank()) {
-            return produtoMapper.toDtoList(repository.findAll());
-        }
-        String termo = busca.trim();
-        return produtoMapper.toDtoList(
-                repository.findByNomeContainingIgnoreCaseOrTipoContainingIgnoreCaseOrSetorContainingIgnoreCase(
-                        termo, termo, termo));
+        List<Produto> produtos = Optional.ofNullable(busca)
+                .map(String::trim)
+                .filter(termo -> !termo.isEmpty())
+                .map(termo -> repository.findByNomeContainingIgnoreCaseOrTipoContainingIgnoreCaseOrSetorContainingIgnoreCase(
+                        termo, termo, termo))
+                .orElseGet(repository::findAll);
+        return produtoMapper.toDtoList(produtos);
     }
 
     public List<Produto> listarTodos() {
@@ -36,14 +36,17 @@ public class ProdutoService {
     }
 
     public ProdutoDTO buscarDtoPorIdOuFalhar(Long id) {
-        Produto produto = repository.findById(id)
+        return repository.findById(id)
+                .map(produtoMapper::toDto)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado: " + id));
-        return produtoMapper.toDto(produto);
     }
 
     public ProdutoDTO salvarDto(ProdutoDTO dto) {
-        Produto salvo = repository.save(produtoMapper.toEntity(dto));
-        return produtoMapper.toDto(salvo);
+        return Optional.ofNullable(dto)
+                .map(produtoMapper::toEntity)
+                .map(repository::save)
+                .map(produtoMapper::toDto)
+                .orElseThrow(() -> new IllegalArgumentException("Dados do produto inválidos."));
     }
 
     public Produto salvar(Produto produto) {

@@ -1,9 +1,8 @@
 package fiap.mercadoExpress.service;
 
-import fiap.mercadoExpress.model.Usuario;
+import fiap.mercadoExpress.mapper.PagamentoMapper;
 import fiap.mercadoExpress.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,15 +13,12 @@ import org.springframework.stereotype.Service;
 public class UsuarioDetailsService implements UserDetailsService {
 
     private final UsuarioRepository repository;
+    private final PagamentoMapper mapper;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario u = repository.findByEmail(email)
+        return repository.findByEmail(email)
+                .map(mapper::toUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
-        return User.builder()
-                .username(u.getNome())
-                .password(u.getSenha())
-                .roles(u.getRole())
-                .build();
     }
 }

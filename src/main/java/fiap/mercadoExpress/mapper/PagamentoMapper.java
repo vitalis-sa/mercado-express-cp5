@@ -1,11 +1,21 @@
 package fiap.mercadoExpress.mapper;
 
+import fiap.mercadoExpress.dto.DashboardDTO;
 import fiap.mercadoExpress.dto.PagamentoDTO;
 import fiap.mercadoExpress.model.Compra;
+import fiap.mercadoExpress.model.EmailModel;
 import fiap.mercadoExpress.model.ItemCompra;
 import fiap.mercadoExpress.model.Produto;
+import fiap.mercadoExpress.model.Usuario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Mapper(componentModel = "spring")
 public interface PagamentoMapper {
@@ -51,4 +61,25 @@ public interface PagamentoMapper {
     @Mapping(target = "precoUnitario", source = "valor", defaultValue = "0")
     @Mapping(target = "custoUnitario", constant = "0")
     ItemCompra toItemCompra(PagamentoDTO dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", constant = "USER")
+    Usuario toUsuario(String nome, String email, String senha);
+
+    default UserDetails toUserDetails(Usuario u) {
+        return new User(u.getNome(), u.getSenha(), List.of(new SimpleGrantedAuthority("ROLE_" + u.getRole())));
+    }
+
+    DashboardDTO toDashboardDto(int totalCompras,
+                                int aprovadas,
+                                int recusadas,
+                                int pendentes,
+                                BigDecimal receita,
+                                BigDecimal lucro,
+                                Map<String, BigDecimal> vendasPorDia,
+                                Map<String, Integer> produtosVendidos,
+                                List<Produto> estoque,
+                                List<Compra> ultimasCompras,
+                                long emailsEnviados,
+                                List<EmailModel> ultimosEmails);
 }

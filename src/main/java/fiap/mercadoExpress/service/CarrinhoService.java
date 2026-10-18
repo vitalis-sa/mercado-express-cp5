@@ -7,8 +7,8 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
-/** Carrinho de compras mantido na sessão HTTP do usuário (produtoId -> quantidade). */
 @Component
 @SessionScope
 public class CarrinhoService {
@@ -17,12 +17,11 @@ public class CarrinhoService {
     private final Map<Long, Integer> itens = new LinkedHashMap<>();
 
     public void adicionar(Produto produto) {
-        int atual = itens.getOrDefault(produto.getId(), 0);
-        int estoque = produto.getEstoque() == null ? 0 : produto.getEstoque();
-        if (atual + 1 > estoque) {
-            throw new IllegalStateException("Estoque insuficiente para " + produto.getNome());
-        }
-        itens.put(produto.getId(), atual + 1);
+        int proximo = itens.getOrDefault(produto.getId(), 0) + 1;
+        Optional.ofNullable(produto.getEstoque())
+                .filter(estoque -> estoque >= proximo)
+                .orElseThrow(() -> new IllegalStateException("Estoque insuficiente para " + produto.getNome()));
+        itens.put(produto.getId(), proximo);
     }
 
     public void remover(Long produtoId) {

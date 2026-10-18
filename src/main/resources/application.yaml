@@ -39,6 +39,9 @@ spring:
       mail:
         smtp:
           auth: true
+          connectiontimeout: 3000
+          timeout: 3000
+          writetimeout: 3000
           starttls:
             enable: true
             required: true
@@ -48,3 +51,4 @@ spring:
 app:
   mail:
     from: ${MAIL_USER:noreply@mercadoexpress.com}
+    brevo-api-key: ${BREVO_API_KEY:}

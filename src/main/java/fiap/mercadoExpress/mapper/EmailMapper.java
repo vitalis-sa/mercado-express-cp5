@@ -5,6 +5,7 @@ import fiap.mercadoExpress.model.Compra;
 import fiap.mercadoExpress.model.EmailModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.mail.SimpleMailMessage;
 
 @Mapper(componentModel = "spring")
 public interface EmailMapper {
@@ -25,4 +26,14 @@ public interface EmailMapper {
     @Mapping(target = "subject", expression = "java(\"Pagamento confirmado - Pedido \" + compra.getNumeroPedido())")
     @Mapping(target = "text", expression = "java(\"Olá, \" + (compra.getClienteNome() == null ? \"cliente\" : compra.getClienteNome()) + \"! O Banco Tranquilo confirmou o pagamento do pedido \" + compra.getNumeroPedido() + \" (\" + compra.getDescricao() + \") no valor de R$ \" + compra.getValorTotal() + \". Obrigado por comprar no Mercado Express!\")")
     EmailModel toConfirmacaoEmail(Compra compra, String emailFrom);
+
+    @Mapping(target = "from", source = "emailFrom")
+    @Mapping(target = "to", expression = "java(new String[]{emailModel.getEmailTo()})")
+    @Mapping(target = "subject", source = "subject")
+    @Mapping(target = "text", source = "text")
+    @Mapping(target = "replyTo", ignore = true)
+    @Mapping(target = "cc", ignore = true)
+    @Mapping(target = "bcc", ignore = true)
+    @Mapping(target = "sentDate", ignore = true)
+    SimpleMailMessage toMailMessage(EmailModel emailModel);
 }

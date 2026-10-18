@@ -1,16 +1,17 @@
 package fiap.mercadoExpress.service;
 
+import fiap.mercadoExpress.config.RabbitConfig;
 import fiap.mercadoExpress.dto.PagamentoDTO;
 import fiap.mercadoExpress.enums.StatusPagamento;
 import fiap.mercadoExpress.mapper.EmailMapper;
 import fiap.mercadoExpress.mapper.PagamentoMapper;
 import fiap.mercadoExpress.model.Compra;
-import fiap.mercadoExpress.model.ItemCompra;
 import fiap.mercadoExpress.producer.PagamentoRequestProducer;
 import fiap.mercadoExpress.repository.CompraRepository;
 import fiap.mercadoExpress.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class PagamentoService {
     private final PagamentoRequestProducer producer;
     private final CompraRepository compraRepository;
     private final ProdutoRepository produtoRepository;
-    private final EmailService emailService;
+    private final AmqpTemplate amqpTemplate;
     private final PagamentoMapper pagamentoMapper;
     private final EmailMapper emailMapper;
     private final JsonMapper jsonMapper;
@@ -66,7 +67,8 @@ public class PagamentoService {
     }
 
     private Compra obterOuCriarCompra(PagamentoDTO request) {
-        return compraRepository.findByNumeroPedido(request.getNumeroPedido())
+        return Optional.ofNullable(request.getNumeroPedido())
+                .flatMap(compraRepository::findByNumeroPedido)
                 .orElseGet(() -> {
                     Compra compra = pagamentoMapper.toCompra(request);
                     compra.adicionarItem(pagamentoMapper.toItemCompra(request));
@@ -75,31 +77,34 @@ public class PagamentoService {
     }
 
     private void baixarEstoque(Compra compra) {
-        for (ItemCompra item : compra.getItens()) {
-            if (item.getProdutoId() == null) {
-                continue;
-            }
-            produtoRepository.findById(item.getProdutoId()).ifPresent(produto -> {
-                int estoqueAtual = produto.getEstoque() == null ? 0 : produto.getEstoque();
-                produto.setEstoque(Math.max(0, estoqueAtual - item.getQuantidade()));
-                produtoRepository.save(produto);
-            });
-        }
+        compra.getItens().forEach(item ->
+                Optional.ofNullable(item.getProdutoId())
+                        .flatMap(produtoRepository::findById)
+                        .ifPresent(produto -> {
+                            int estoqueAtual = Optional.ofNullable(produto.getEstoque()).orElse(0);
+                            produto.setEstoque(Math.max(0, estoqueAtual - item.getQuantidade()));
+                            produtoRepository.save(produto);
+                        })
+        );
     }
 
     private void enviarEmailConfirmacao(Compra compra) {
-        if (compra.getClienteEmail() == null || compra.getClienteEmail().isBlank()) {
-            return;
-        }
-        emailService.sendEmail(emailMapper.toConfirmacaoEmail(compra, emailFrom));
+        Optional.ofNullable(compra.getClienteEmail())
+                .filter(email -> !email.isBlank())
+                .map(email -> emailMapper.toDto(emailMapper.toConfirmacaoEmail(compra, emailFrom)))
+                .ifPresent(dto -> {
+                    try {
+                        amqpTemplate.convertAndSend(RabbitConfig.EMAIL_QUEUE, jsonMapper.writeValueAsString(dto));
+                    } catch (Exception e) {
+                        log.error("Erro ao enfileirar e-mail de confirmação: {}", e.getMessage());
+                    }
+                });
     }
 
     private Optional<Compra> buscarOuCriarPendente(String payload) {
-        PagamentoDTO dto = jsonMapper.readValue(payload, PagamentoDTO.class);
-        if (dto.getNumeroPedido() == null || dto.getNumeroPedido().isBlank()) {
-            return Optional.empty();
-        }
-        Compra compra = obterOuCriarCompra(dto);
-        return compra.getStatus() == StatusPagamento.PENDENTE ? Optional.of(compra) : Optional.empty();
+        return Optional.ofNullable(jsonMapper.readValue(payload, PagamentoDTO.class))
+                .filter(dto -> dto.getNumeroPedido() != null && !dto.getNumeroPedido().isBlank())
+                .map(this::obterOuCriarCompra)
+                .filter(compra -> compra.getStatus() == StatusPagamento.PENDENTE);
     }
 }
