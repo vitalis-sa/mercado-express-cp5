@@ -31,7 +31,7 @@ public class SecurityConfig {
             .userDetailsService(usuarioDetailsService)
             .authorizeHttpRequests(auth -> auth
                 // rotas públicas
-                .requestMatchers("/", "/index", "/login", "/cadastro", "/css/**", "/error").permitAll()
+                .requestMatchers("/", "/index", "/index.html", "/login", "/cadastro", "/css/**", "/error").permitAll()
                 // somente admin: CRUD de escrita e dashboard gerencial
                 .requestMatchers("/produtos/novo", "/produtos/salvar",
                         "/produtos/editar/**", "/produtos/deletar/**", "/dashboard").hasRole("ADMIN")
