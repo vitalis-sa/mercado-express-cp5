@@ -8,9 +8,9 @@ Aplicação web desenvolvida com Spring MVC, Thymeleaf, Spring Security, Postgre
 
 ## Links do Projeto
 
-- **Link de Produção (Render):** `COLOQUE_AQUI_O_LINK_DO_RENDER`
-- **Repositório Worker Banco Tranquilo (`dbexpress`):** `COLOQUE_AQUI_O_LINK_DO_GITHUB_DBEXPRESS`
-- **Vídeo de Demonstração (YouTube):** `COLOQUE_AQUI_O_LINK_DO_VIDEO`
+- **Link de Produção (Render):** [`LINK_DO_RENDER`](https://mercado-express-cp5-iay6.onrender.com/)
+- **Repositório Worker Banco Tranquilo (`dbexpress`):** [`LINK_DO_GITHUB_DBEXPRESS`](https://github.com/vitalis-sa/banco-tranquilo-cp5)
+- **Vídeo de Demonstração (YouTube):** [`LINK_DO_VIDEO`](https://youtu.be/9-1BpcvanuU)
 
 ---
 
