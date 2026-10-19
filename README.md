@@ -282,6 +282,9 @@ Logado como **ADMIN** — visualiza estoque e todos os botões de gerenciamento 
 
 <img width="1132" height="259" alt="image" src="https://github.com/user-attachments/assets/cc67c289-4798-4dd5-b066-f0b39edd584f" />
 
+Tabela de teste local
+<img width="1643" height="356" alt="image" src="https://github.com/user-attachments/assets/7e804d33-16fb-4d13-8a74-bd2770823231" />
+
 ---
 
 ### Dashboard Gerencial (`GET /dashboard`)
